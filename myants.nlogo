@@ -3,6 +3,7 @@ globals [
 ]
 
 patches-own [
+  chemical             ;; amount of chemical on this patch
   food                 ;; amount of food on this patch (0, 1, or 2)
   nest?                ;; true on nest patches, false elsewhere
   nest-scent           ;; number that is higher closer to the nest
@@ -57,7 +58,7 @@ to recolor-patch  ;; patch procedure
       if food-source-number mod 3 = 1 [ set pcolor sky  ]
       if food-source-number mod 3 = 2 [ set pcolor blue ]
     ]
-    [ set pcolor black ]
+    [ set pcolor scale-color green chemical 0.1 5 ]
   ]
 end
 
@@ -71,8 +72,10 @@ to go
     fd 1
   ]
 
+  diffuse chemical (diffusion-rate / 100)
   ask patches
   [
+    set chemical chemical * (100 - evaporation-rate) / 100  ;; chemical evaporation
     recolor-patch
   ]
 end
@@ -94,7 +97,7 @@ to return-to-nest  ;; turtle procedure
     rt 180
   ]
   [
-
+    set chemical chemical + 60    ;; drop chemical
   ]
 end
 
