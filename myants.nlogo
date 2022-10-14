@@ -83,11 +83,23 @@ end
 to look-for-food  ;; turtle procedure
   if food-source-number > 0
   [
-    set color orange                                ;; pick up food
+    set color green                                 ;; pick up food
     set food-source-number 0                        ;; remove food from ground
     rt 180                                          ;; turn around
     stop
   ]
+  if (chemical >= 0.05) and (chemical < 2)
+  [ follow-chemical ]
+end
+
+to follow-chemical ;; turtle procedure
+  let scent-ahead chemical-scent-at-angle   0
+  let scent-right chemical-scent-at-angle  45
+  let scent-left  chemical-scent-at-angle -45
+  if (scent-right > scent-ahead) or (scent-left > scent-ahead)
+  [ ifelse scent-right > scent-left
+    [ rt 45 ]
+    [ lt 45 ] ]
 end
 
 to return-to-nest  ;; turtle procedure
@@ -98,6 +110,7 @@ to return-to-nest  ;; turtle procedure
   ]
   [
     set chemical chemical + 60    ;; drop chemical
+    follow-nest
   ]
 end
 
@@ -105,4 +118,26 @@ to wiggle  ;; turtle procedure
   rt random 40
   lt random 40
   if not can-move? 1 [ rt 180 ]
+end
+
+to follow-nest ;; turtle procedure
+  let scent-ahead nest-scent-at-angle   0
+  let scent-right nest-scent-at-angle  45
+  let scent-left  nest-scent-at-angle -45
+  if (scent-right > scent-ahead) or (scent-left > scent-ahead)
+  [ ifelse scent-right > scent-left
+    [ rt 45 ]
+    [ lt 45 ] ]
+end
+
+to-report nest-scent-at-angle [angle]
+  let p patch-right-and-ahead angle 1
+  if p = nobody [ report 0 ]
+  report [nest-scent] of p
+end
+
+to-report chemical-scent-at-angle [angle]
+  let p patch-right-and-ahead angle 1
+  if p = nobody [ report 0 ]
+  report [chemical] of p
 end
